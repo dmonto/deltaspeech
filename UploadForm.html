@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <form action="./UploadForm.php" method="post" enctype="multipart/form-data">
+      <input type="file" name="fileToUpload" id="fileToUpload">
+      <input type="submit" value="Upload Image" name="submit">    
+  </form>
+  <input type="hidden" name="acl" value="public-read" />
+  <input type="hidden" name="success_action_redirect" value="https://delta-ai.s3-eu-west-1.amazonaws.com/" />
+  <input type="hidden" name="Content-Type" value="text/html" />
+  <input type="hidden" name="x-amz-meta-uuid" value="*****" />
+  <input type="hidden" name="AWSAccessKeyId" value="*****" />
+  <input type="hidden" name="policy" value="" />
+  <input type="hidden" name="Signature" value="*****" />
+<br />
+  <!-- The elements after this will be ignored -->
+</html>

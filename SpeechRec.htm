@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Asistente Anestesia Virtual</title>
+    <style>
+      .container {  
+        display: grid; width: 100%; height: 1000px;
+        grid-template-areas: "logoleft monitor detector logoright" "sidebar main main main ";
+        grid-template-rows: 100px 1fr; grid-template-columns: 300px 1fr 1fr 1fr;}
+      .logoleft {grid-area: logoleft; padding: 1px;}
+      .logoright {grid-area: logoright; padding: 1px;background-color:brown;}
+      .monitor {grid-area: monitor; padding: 10px; font-family:arial; font-size: 2em; text-align: center; vertical-align: middle;}
+      .detector {grid-area: detector; padding: 10px; font-family:arial; font-size: 1em; text-align: center; vertical-align: middle;}
+      .side {display: block; padding: 1px; font-family:arial; font-size: 7; text-align: left; vertical-align: middle;}
+      .sidebar {grid-area: sidebar; padding: 10px; }
+      .main {grid-area: main; padding: 10px;width: 100%; height: 1000; font-family: Arial; background-color:bisque; color: blue; font-size: 3em; text-align: center;}
+      img {width: 100%}
+  </style>
+  </head>
+<body>
+  <div class=container>
+    <div class=logoleft><img src=https://delta-ai.com/wp-content/uploads/2018/06/Delta-logo-2-156px-height-padded.png></div>
+    <div id='monitor' class=monitor>Iniciando...habilite micro y comience a hablar</div>
+    <div id='detector' class=detector></div>
+    <div class=logoright><img src=http://estratagema.es/assets/images/light-logo.png></div>
+
+<!--
+  <object width=100% height=1000 id='pdf1' data="" type="application/pdf">
+    <embed width=100% height=1000 id='pdf2' src="" type="application/pdf" />
+  </object>
+-->
+  <div id=sidebar class=sidebar>
+    <script>
+        var caps=['Fibrilación','Asistolia','Disociación electromecanica','RCP en la embarazada','RCP en el recien nacido','RCP en el niño',
+            'Vía aérea difícil prevista','Via aérea difícil imprevista', 'Anafilaxia', 'Laringoespasmo', 'Broncoespasmo', 'Fuego en vía aérea', 'Aspiración pulmonar',
+            'Neumotórax','Edema pulmonar','Isquemia miocárdica','Hemorragia masiva','Bloqueo espinal total','Despertar intraoperatorio','Retraso en el despertar',
+            'Reaccion transfusional','Fallo de suministro eléctrico','Fallo de suministro de oxígeno','Fuego en el paciente'];
+        var i=1;
+        caps.forEach(element => {
+          document.writeln (`<div class=side id=side${i} onclick="clickTema(${i});" onmouseover="overTema(${i});">${element}</div>`);
+          i++;
+        });
+    </script>
+  </div>
+  <script>
+    i=1;
+    caps.forEach(element => {
+      document.writeln (`<div id=cont${i} class=main style = "display: none;"><br/><br/>PDF de ${element}</div>`);
+      i++;
+    });
+  </script>
+  <script defer>
+        let lastclick=null;
+        let lastover=null;
+        
+        function muestraCap(i) {
+          document.getElementById('cont' + i).style.display = 'table-cell';
+          document.getElementById('side' + i).style.color = 'blue';
+          document.getElementById('side' + i).style.fontWeight = 'bold';
+          if (lastclick) {
+            document.getElementById('cont' + lastterm).style.display = 'none';
+            document.getElementById('side' + lastterm).style.color = 'black';
+            document.getElementById('side' + lastterm).style.fontWeight = 'normal';
+          }
+          lastclick=i;
+        };
+
+        function clickTema(i) {
+          muestraCap(i);
+        };
+        
+        function overTema(i) {
+          document.getElementById('side' + i).style.backgroundColor = 'grey';
+          document.getElementById('side' + i).style.fontWeight = 'bold';       
+          if (lastover) {
+            document.getElementById('side' + lastover).style.backgroundColor = null;
+            document.getElementById('side' + lastover).style.fontWeight = 'normal';
+          }
+          lastover=i;
+        };
+
+        window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+        let finalTranscript = '';
+        let recognition = new window.SpeechRecognition();
+
+        recognition.interimResults = true;
+        recognition.maxAlternatives = 10;
+        recognition.continuous = true;
+        recognition.lang = "es-ES"
+        recognition.onresult = (event) => {
+          let interimTranscript = '';
+          let transcript='';
+          document.getElementById("monitor").innerHTML = 'Escuchando...';
+          for (let i = event.resultIndex, len = event.results.length; i < len; i++) {
+            transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalTranscript += transcript;
+              i=1;
+              caps.forEach(element => {
+                if (transcript.search(element.toLowerCase()) >=0) {
+                  document.getElementById('detector').innerHTML = 'Mostrando ' + element;
+                  muestraCap(i);
+                }
+                else {
+//                document.getElementById('pdf1').data = "http://domoh.com/Manual.pdf";
+//                document.getElementById('pdf2').src = "http://domoh.com/Manual.pdf";
+                }
+                i++;
+              });
+              console.log(transcript);
+            } else {
+              interimTranscript += transcript;
+            }
+          }
+        }
+        
+        recognition.start();
+      </script>
+</body>
+
+</html>
